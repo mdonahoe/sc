@@ -154,8 +154,7 @@ glVertex3f(  1, -1,  1)
 glEnd()
 glEndList()
 
-eye = [0, 0, 0]
-ref = [1, 0, 0]
+eye = [0, 1.5, 0]
 theta = 0
 phi = 0
 
@@ -177,20 +176,6 @@ while not done:
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
     gluPerspective(90,1,0.01,1000)
-    dtheta, dphi = pygame.mouse.get_rel()
-    theta += dtheta
-    phi += dphi
-    glTranslatef(eye[0], eye[1], eye[2])
-    glRotatef(theta, 0, 1, 0)
-    glRotatef(phi, 1, 0, 0)
-    ref[0] = sin(2 * pi * theta/360.0) + eye[0]
-    ref[1] = eye[1]
-    ref[2] = cos(2 * pi * theta/360.0) + eye[2]
-    eye[1] += .1
-    #gluLookAt(eye[0], eye[1], eye[2], ref[0], ref[1], ref[2], 0, 1, 0)
-
-    #gluLookAt(sin(t/260.0)*4,cos(t/260.0)*4,cos(t/687.0)*3,0,0,0,0,1,0)
-
     glClearColor(0.0, 0.0, 0.0, 1.0)
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
 
@@ -208,15 +193,21 @@ while not done:
 
     glColor3f(1,1,1)
 
+    # move the camera
     glLoadIdentity()
-    # render a pretty range of cubes
+    dtheta, dphi = pygame.mouse.get_rel()
+    theta += dtheta
+    phi = max(-90, min(90, phi + dphi))
+    glRotatef(max(min(90, phi), -90), 1, 0, 0)
+    glRotatef(theta, 0, 1, 0)
+    glTranslatef(eye[0], eye[1], eye[2])
 
+    # render a pretty range of cubes
     l = 6
     for i in range(-l,l):
         for j in range(-l,l):
             for k in range(-l,l):
                 glPushMatrix()
-
                 glTranslate(i,j,k)
                 glScale(0.1,0.1,0.1)
                 glCallList(1)
