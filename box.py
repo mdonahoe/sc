@@ -200,17 +200,15 @@ while not done:
     phi = max(-90, min(90, phi + dphi))
     glRotatef(max(min(90, phi), -90), 1, 0, 0)
     glRotatef(theta, 0, 1, 0)
-    glTranslatef(eye[0], eye[1], eye[2])
+    glTranslatef(-eye[0], -eye[1], -eye[2])
 
     # render a pretty range of cubes
-    l = 6
-    for i in range(-l,l):
-        for j in range(-l,l):
-            for k in range(-l,l):
-                glPushMatrix()
-                glTranslate(i,j,k)
-                glScale(0.1,0.1,0.1)
-                glCallList(1)
-                glPopMatrix()
+    blocks = [(x, -2, z) for x in range(-3, 3) for z in range(-6, 6)]
+    #blocks = [(1, 2, 3), (1, 1, 2), (1, 2, 2), (-1, -1, -1), (-5, 0, 0)]
+    for block in blocks:
+        glPushMatrix()
+        glTranslate(block[0], block[1], block[2])
+        glCallList(1)
+        glPopMatrix()
 
     pygame.display.flip()
