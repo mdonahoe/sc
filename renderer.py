@@ -2,6 +2,7 @@ import math
 import OpenGL
 from OpenGL.GL import *
 from OpenGL.GLU import *
+import os
 import pygame
 import random
 import sys
@@ -48,8 +49,9 @@ class Renderer(object):
         self.t = 0
 
     def init(self):
+        os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (300, 200)
         pygame.init()
-        pygame.display.set_mode((800,600), pygame.OPENGL | pygame.DOUBLEBUF)
+        pygame.display.set_mode((800,600), pygame.OPENGL | pygame.DOUBLEBUF | pygame.HWSURFACE)
         pygame.mouse.set_visible(False)
         pygame.event.set_grab(True)
 
@@ -149,8 +151,8 @@ class Renderer(object):
 
         # move the camera
         glLoadIdentity()
-        glRotatef(player.phi, 1, 0, 0)
-        glRotatef(player.theta, 0, 1, 0)
+        glRotatef(-player.phi, 1, 0, 0)
+        glRotatef(-player.theta, 0, 1, 0)
         glTranslatef(-player.pos[0], -player.pos[1], -player.pos[2])
 
         # render a pretty range of blocks
