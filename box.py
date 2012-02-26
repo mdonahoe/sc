@@ -158,20 +158,28 @@ eye = [0, 1.5, 0]
 theta = 0
 phi = 0
 
-def HandleEvents(events):
-  for event in events:
-    if event.type == pygame.QUIT:
-      return True
-    if event.type == pygame.KEYDOWN:
-      if event.key == pygame.K_ESCAPE:
-        return True
-  return False
+def UserInput(events):
+    """Returns dtheta, dphi, dforward"""
+    dforward = 0
+    for event in events:
+        if event.type == pygame.QUIT:
+            return
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                return
+            if event.key == pygame.K_w:
+                dforward = 1
+            if event.key == pygame.K_s:
+                dforward = -1
+    # do mouse stuff
+    dtheta, dphi = pygame.mouse.get_rel()
+    return (dtheta, dphi, dforward)
 
 while not done:
 
-    done = HandleEvents(pygame.event.get())
+    delta = UserInput(pygame.event.get())
+    if not delta: break
     t=t+1
-    glUseProgram(program)
 
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
@@ -195,7 +203,7 @@ while not done:
 
     # move the camera
     glLoadIdentity()
-    dtheta, dphi = pygame.mouse.get_rel()
+    dtheta, dphi, dfor = delta
     theta += dtheta
     phi = max(-90, min(90, phi + dphi))
     glRotatef(max(min(90, phi), -90), 1, 0, 0)
