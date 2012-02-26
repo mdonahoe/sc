@@ -11,6 +11,7 @@ import random
 from math import * # trigonometry
 
 import pygame # just to get a display
+from pygame.locals import *
 
 import Image
 import sys
@@ -152,15 +153,38 @@ glVertex3f(  1, -1,  1)
 glEnd()
 glEndList()
 
+eye = [0, 0, 0]
+ref = [1, 0, 0]
+theta = 0
+phi = 0
+
+def HandleEvents(events):
+  for event in events:
+    if event.type == pygame.locals.QUIT:
+      return True
+  return False
+
 while not done:
 
+    done = HandleEvents(pygame.event.get())
     t=t+1
     glUseProgram(program)
 
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
     gluPerspective(90,1,0.01,1000)
-    gluLookAt(sin(t/260.0)*4,cos(t/260.0)*4,cos(t/687.0)*3,0,0,0,0,1,0)
+    theta = theta + 1
+    phi = phi - 1
+    glTranslatef(eye[0], eye[1], eye[2])
+    glRotatef(theta, 0, 1, 0)
+    glRotatef(phi, 1, 0, 0)
+    ref[0] = sin(2 * pi * theta/360.0) + eye[0]
+    ref[1] = eye[1]
+    ref[2] = cos(2 * pi * theta/360.0) + eye[2]
+    eye[1] += .1
+    #gluLookAt(eye[0], eye[1], eye[2], ref[0], ref[1], ref[2], 0, 1, 0)
+
+    #gluLookAt(sin(t/260.0)*4,cos(t/260.0)*4,cos(t/687.0)*3,0,0,0,0,1,0)
 
     glClearColor(0.0, 0.0, 0.0, 1.0)
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
@@ -182,9 +206,10 @@ while not done:
     glLoadIdentity()
     # render a pretty range of cubes
 
-    for i in range(-2,2):
-        for j in range(-2,2):
-            for k in range(-5,5):
+    l = 6
+    for i in range(-l,l):
+        for j in range(-l,l):
+            for k in range(-l,l):
                 glPushMatrix()
 
                 glTranslate(i,j,k)
