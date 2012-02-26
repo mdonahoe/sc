@@ -20,6 +20,8 @@ import time
 
 pygame.init()
 pygame.display.set_mode((800,600), pygame.OPENGL|pygame.DOUBLEBUF)
+pygame.mouse.set_visible(False)
+pygame.event.set_grab(True)
 
 def jpg_file_write(name, number, data):
     im = Image.frombuffer("RGBA", (800,600), data, "raw", "RGBA", 0, 0)
@@ -175,8 +177,9 @@ while not done:
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
     gluPerspective(90,1,0.01,1000)
-    theta = theta + 1
-    phi = phi - 1
+    dtheta, dphi = pygame.mouse.get_rel()
+    theta += dtheta
+    phi += dphi
     glTranslatef(eye[0], eye[1], eye[2])
     glRotatef(theta, 0, 1, 0)
     glRotatef(phi, 1, 0, 0)
