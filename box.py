@@ -11,7 +11,6 @@ import random
 from math import * # trigonometry
 
 import pygame # just to get a display
-from pygame.locals import *
 
 import Image
 import sys
@@ -160,8 +159,11 @@ phi = 0
 
 def HandleEvents(events):
   for event in events:
-    if event.type == pygame.locals.QUIT:
+    if event.type == pygame.QUIT:
       return True
+    if event.type == pygame.KEYDOWN:
+      if event.key == pygame.K_ESCAPE:
+        return True
   return False
 
 while not done:
