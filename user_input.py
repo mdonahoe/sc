@@ -4,9 +4,10 @@ escape = False
 dtheta = 0
 dphi = 0
 forward = 0
+sideways = 0
 
 def update(events):
-    global escape, dtheta, dphi, forward
+    global escape, dtheta, dphi, forward, sideways
     """Returns dtheta, dphi, dforward"""
     dtheta = 0
     dphi = 0
@@ -20,8 +21,18 @@ def update(events):
                 forward = 1
             elif event.key == pygame.K_s:
                 forward = -1
+            elif event.key == pygame.K_a:
+                sideways = -1
+            elif event.key == pygame.K_d:
+                sideways = 1
         elif event.type == pygame.KEYUP:
-            if event.key in (pygame.K_w, pygame.K_s):
+            if event.key == pygame.K_w and forward == 1:
                 forward = 0
+            if event.key == pygame.K_s and forward == -1:
+                forward = 0
+            if event.key == pygame.K_d and sideways == 1:
+                sideways = 0
+            if event.key == pygame.K_a and sideways == -1:
+                sideways = 0
     # do mouse stuff
     dtheta, dphi = pygame.mouse.get_rel()
