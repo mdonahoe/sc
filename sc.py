@@ -1,16 +1,17 @@
 import pygame
 
-import user_input
+import client
 import player
 import renderer
+import user_input
 
-world = [(x, -2, z) for x in range(-3, 3) for z in range(-6, 6)]
 r = renderer.Renderer()
 r.init()
 p = player.Player()
+client.connection('username1')
 
 while True:
     user_input.update(pygame.event.get())
     if user_input.escape: break
     p.update(user_input)
-    r.render(p, world)
+    r.render(p, client.world.get_list())
