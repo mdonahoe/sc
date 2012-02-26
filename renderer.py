@@ -160,6 +160,7 @@ class Renderer(object):
         for block in world:
             glPushMatrix()
             glTranslate(block[0], block[1], block[2])
+            glScalef(0.5, 0.5, 0.5)
             glCallList(self.block_list)
             glPopMatrix()
 
