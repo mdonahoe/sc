@@ -2,6 +2,9 @@ import math
 import numpy
 
 ISQRT2 = 1 / math.sqrt(2)
+DEG2RAD = math.pi / 180
+cos = lambda x: math.cos(x * DEG2RAD)
+sin = lambda x: math.sin(x * DEG2RAD)
 
 class Player(object):
     def __init__(self):
@@ -16,9 +19,9 @@ class Player(object):
         speed = self.speed
         if user.forward and user.sideways:
             speed *= ISQRT2
-        forward = [math.sin(self.theta * math.pi / 180) * abs(math.cos(self.phi * math.pi / 180)),
-                -math.sin(self.phi * math.pi / 180),
-                math.cos(self.theta * math.pi / 180) * abs(math.cos(self.phi * math.pi / 180))]
+        forward = [sin(self.theta) * abs(cos(self.phi)),
+                -sin(self.phi),
+                cos(self.theta) * abs(cos(self.phi))]
 
         if user.forward:
             self.pos[0] -= speed * user.forward * forward[0]
