@@ -52,5 +52,12 @@ def reset(blockstring=None):
     if blockstring:
         update(blockstring)
 
+def make_string(key, pos):
+    if len(pos) != 3:
+        raise BlockFormatError
+    x, y, z = pos
+    s = '%s=%.1f,%.1f,%.1f' % (key, x, y, z)
+    return s
+
 def show():
     print get_all()

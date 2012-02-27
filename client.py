@@ -14,6 +14,7 @@ import world
 host = ''
 username = ''
 port = 12345
+c = None
 
 class Connection(object):
     """Manages server connection socket"""
@@ -43,6 +44,7 @@ class Connection(object):
                 self.s = self.connect()
 
 def connection(username, terminal=False):
+    global c
     c = Connection(username)
     def update_world():
         """sync blocks"""
@@ -68,6 +70,12 @@ def connection(username, terminal=False):
         except world.BlockFormatError:
             print 'bad input'
         world.show()
+
+def blockupdate(name, pos):
+    # update the world and send to the server
+    x = world.make_string(name, pos)
+    #world.update(x)
+    c.send('update:' + x)
 
 if __name__ == '__main__':
     connection(raw_input('name:'), True)
