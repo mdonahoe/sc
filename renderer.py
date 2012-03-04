@@ -15,6 +15,9 @@ class Renderer(object):
         self.vertex_shader_prog = """
             varying vec4 v;
             varying vec3 N;
+            varying vec2 texcoord;
+
+            uniform vec2 textureOffset;
 
             void main(void)
             {
@@ -23,12 +26,17 @@ class Renderer(object):
                N = gl_NormalMatrix * gl_Normal;
 
                gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
+               texcoord = (gl_MultiTexCoord0.xy + textureOffset) / 16.0;
+
 
             }
         """
+
         self.fragment_shader_prog = """
+            uniform sampler2D atlas;
             varying vec3 N;
             varying vec4 v;
+            varying vec2 texcoord;
 
             void main(void)
             {
@@ -41,7 +49,7 @@ class Renderer(object):
 
                float Idiff = max(dot(normalize(L),N),0.0)*pow(length(L),-2.0);
 
-               gl_FragColor = vec4(0.5,0,0.0,1.0)+ // purple
+               gl_FragColor = texture2D(atlas, texcoord) +
                               vec4(1.0,1.0,1.0,1.0)*Idiff; // diffuse reflection
             }
         """
@@ -69,13 +77,15 @@ class Renderer(object):
         glAttachShader(program, vertex_shader)
         glAttachShader(program, fragment_shader)
         glLinkProgram(program)
-        self.imageID = loadImage('leather.jpg')
+        self.blocktexture = loadImage('terrain.png')
+        self.textureOffset = glGetUniformLocation(program, "textureOffset") #make the uniform name
+        # textureOffset lets us use the single terrain images for all our blocks
+        # the shader calculates the texture coordinates based on the offset
 
         # try to activate/enable shader program
         # handle errors wisely
 
         self.init_block_list()
-        return # dont use the shader until we have a clue about them
         try:
             glUseProgram(program)
         except OpenGL.error.GLError:
@@ -92,41 +102,41 @@ class Renderer(object):
 
         glColor3f(1,1,0)
 
-        glNormal3f(0, 0, -1)
-        glVertex3f(-1, -1, -1)
-        glVertex3f( 1, -1, -1)
-        glVertex3f( 1,  1, -1)
-        glVertex3f(-1,  1, -1)
-
         glNormal3f(0, 0, 1)
-        glVertex3f(-1, -1,  1)
-        glVertex3f( 1, -1,  1)
-        glVertex3f( 1,  1,  1)
-        glVertex3f(-1,  1,  1)
-
-        glNormal3f(0, -1, 0)
-        glVertex3f(-1, -1, -1)
-        glVertex3f( 1, -1, -1)
-        glVertex3f( 1, -1,  1)
-        glVertex3f(-1, -1,  1)
-
-        glNormal3f(0, 1, 0)
-        glVertex3f(-1,  1, -1)
-        glVertex3f( 1,  1, -1)
-        glVertex3f( 1,  1,  1)
-        glVertex3f(-1,  1,  1)
+        glTexCoord2f(0.0, 0.0); glVertex3f(-1.0, -1.0,  1.0);
+        glTexCoord2f(1.0, 0.0); glVertex3f( 1.0, -1.0,  1.0);
+        glTexCoord2f(1.0, 1.0); glVertex3f( 1.0,  1.0,  1.0);
+        glTexCoord2f(0.0, 1.0); glVertex3f(-1.0,  1.0,  1.0);
 
         glNormal3f(-1, 0, 0)
-        glVertex3f(-1, -1, -1)
-        glVertex3f(-1,  1, -1)
-        glVertex3f(-1,  1,  1)
-        glVertex3f(-1, -1,  1)
+        glTexCoord2f(1.0, 0.0); glVertex3f(-1.0, -1.0, -1.0);
+        glTexCoord2f(1.0, 1.0); glVertex3f(-1.0,  1.0, -1.0);
+        glTexCoord2f(0.0, 1.0); glVertex3f( 1.0,  1.0, -1.0);
+        glTexCoord2f(0.0, 0.0); glVertex3f( 1.0, -1.0, -1.0);
+
+        glNormal3f(0, 1, 0)
+        glTexCoord2f(0.0, 1.0); glVertex3f(-1.0,  1.0, -1.0);
+        glTexCoord2f(0.0, 0.0); glVertex3f(-1.0,  1.0,  1.0);
+        glTexCoord2f(1.0, 0.0); glVertex3f( 1.0,  1.0,  1.0);
+        glTexCoord2f(1.0, 1.0); glVertex3f( 1.0,  1.0, -1.0);
+
+        glNormal3f(0, 0, -1)
+        glTexCoord2f(1.0, 1.0); glVertex3f(-1.0, -1.0, -1.0);
+        glTexCoord2f(0.0, 1.0); glVertex3f( 1.0, -1.0, -1.0);
+        glTexCoord2f(0.0, 0.0); glVertex3f( 1.0, -1.0,  1.0);
+        glTexCoord2f(1.0, 0.0); glVertex3f(-1.0, -1.0,  1.0);
 
         glNormal3f(1, 0, 0)
-        glVertex3f( 1, -1, -1)
-        glVertex3f( 1,  1, -1)
-        glVertex3f( 1,  1,  1)
-        glVertex3f( 1, -1,  1)
+        glTexCoord2f(1.0, 0.0); glVertex3f( 1.0, -1.0, -1.0);
+        glTexCoord2f(1.0, 1.0); glVertex3f( 1.0,  1.0, -1.0);
+        glTexCoord2f(0.0, 1.0); glVertex3f( 1.0,  1.0,  1.0);
+        glTexCoord2f(0.0, 0.0); glVertex3f( 1.0, -1.0,  1.0);
+
+        glNormal(0, -1, 0)
+        glTexCoord2f(0.0, 0.0); glVertex3f(-1.0, -1.0, -1.0);
+        glTexCoord2f(1.0, 0.0); glVertex3f(-1.0, -1.0,  1.0);
+        glTexCoord2f(1.0, 1.0); glVertex3f(-1.0,  1.0,  1.0);
+        glTexCoord2f(0.0, 1.0); glVertex3f(-1.0,  1.0, -1.0);
 
         glEnd()
         glEndList()
@@ -151,7 +161,6 @@ class Renderer(object):
         glLightfv(GL_LIGHT0, GL_POSITION, [ld[0], ld[1], ld[2]]);
 
         # fallback
-        glColor3f(1, 1, 1)
 
         # move the camera
         glLoadIdentity()
@@ -162,7 +171,9 @@ class Renderer(object):
         # render a pretty range of blocks
         #blocks = [(1, 2, 3), (1, 1, 2), (1, 2, 2), (-1, -1, -1), (-5, 0, 0)]
 
-        glDisable(GL_TEXTURE_2D)
+
+        setupTexture(self.blocktexture)
+        glUniform2fv(self.textureOffset, 1, [2,15])
         for block in blocks:
             glPushMatrix()
             glTranslate(block[0], block[1], block[2])
@@ -170,12 +181,13 @@ class Renderer(object):
             glCallList(self.block_list)
             glPopMatrix()
 
-        setupTexture(self.imageID)
+        glUniform2fv(self.textureOffset, 1, [2,12])
         for other in players:
             if player == other: continue
             glPushMatrix()
             draw_player_model(other)
             glPopMatrix()
+        glDisable(GL_TEXTURE_2D)
 
         pygame.display.flip()
 
@@ -235,6 +247,7 @@ def loadImage(imageName = "nehe_wall.bmp" ):
 
 def drawCube():
     """Draw a cube with texture coordinates"""
+    # do something different than a block to differentiate players from blocks
     glBegin(GL_QUADS);
     glTexCoord2f(0.0, 0.0); glVertex3f(-1.0, -1.0,  1.0);
     glTexCoord2f(1.0, 0.0); glVertex3f( 1.0, -1.0,  1.0);

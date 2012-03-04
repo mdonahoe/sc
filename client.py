@@ -79,5 +79,9 @@ def blockupdate(name, pos):
     #world.update(x)
     c.send('update:' + x)
 
+def playerupdate(name, player):
+    x = world.make_string_player(name, player)
+    c.send('move:' + x)
+
 if __name__ == '__main__':
     connection(raw_input('name:'), True)

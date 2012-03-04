@@ -78,5 +78,10 @@ def make_string(key, pos):
     s = '%s=%.1f,%.1f,%.1f' % (key, x, y, z)
     return s
 
+def make_string_player(name, player):
+    x,y,z = player.pos
+    s = '%s=%.1f,%.1f,%.1f,%d,%d' % (name, x,y,z,player.theta,player.phi)
+    return s
+
 def show():
     print get_all()

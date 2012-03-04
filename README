@@ -1,12 +1,14 @@
 The goal is to make a clone of Minecraft and SecondLife using VPython
 
 
+Done
+    1. blocks with different textures
 Todo:
-    1. blocks with different colors
     2. persistent world data
     3. create blocks from the 3d client
-    4. dont send packets every second
+    4. send more player data each loop (orientation, etc) 
+    4.5. make a player model, with texture
     5. rate limit the game loop
-    6. textures, etc
     7. different types of blocks
-
+    8. left click to create a block, right click to delete a block
+    9. group blocks into chunks for efficient use of Display Lists

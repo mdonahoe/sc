@@ -28,5 +28,6 @@ while True:
     send_interval += 1
     if send_interval > 30:
         send_interval = 0
-        client.blockupdate(username, p.pos)
+        client.playerupdate(username, p)
     r.render(p, client.world.get_list(), client.world.get_players())
+
