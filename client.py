@@ -26,7 +26,7 @@ class Connection(object):
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect((host, port))
         s.send('connect:' + self.username)
-        return s 
+        return s
 
     def send(self, data):
         self.s.send(data)
@@ -55,6 +55,8 @@ def connection(username, terminal=False):
                 world.reset(args)
             elif cmd == 'update':
                 world.update(args)
+            elif cmd == 'move':
+                world.update_player(args)
             else:
                 print 'bad server data'
 

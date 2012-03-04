@@ -20,10 +20,29 @@ ID = STRING
 FLOAT = A floating point number, duh
 """
 
+import player
 # all blocks have a unique id, and 3-tuple position
 BLOCKS = dict(o=(0,0,0),x=(10,0,0),y=(0,10,0),z=(0,0,10))  # a default world
 
+PLAYERS = dict()  # a list of player objects
+
 class BlockFormatError(Exception): pass
+
+def update_player(playerstring):
+    """moves a player"""
+    name, nums = playerstring.split('=')
+    x,y,z,t,p = [float(n) for n in nums.split(',')]
+    if name not in PLAYERS:
+        PLAYERS[name] = player.Player()
+    PLAYERS[name].pos = [x,y,z]
+    PLAYERS[name].theta = t
+    PLAYERS[name].phi = p
+
+def get_players():
+    PLAYERS['bob'].theta += 1
+    return PLAYERS.values()
+
+update_player('bob=0,10,0,45,0')  # this player is always there
 
 def update(blockstring):
     """converts a block string into a list of block updates"""

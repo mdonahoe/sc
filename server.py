@@ -28,6 +28,11 @@ try:
             print '%s connected' % args
             start = 'world:' + world.get_all()
             s.sendto(start, addr)
+        elif cmd == 'move':
+            world.update_player(args)
+            for client in CLIENTS:
+                if addr == client: continue
+                s.sendto(data, client)
         elif cmd == 'update':
             world.update(args)
             # naively echo to all other clients
