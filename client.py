@@ -65,12 +65,17 @@ def connection(username, terminal=False):
     a.start()
 
     while terminal:
-        x = raw_input('')
-        try:
-            world.update(x)
-            c.send('update:'+x)
-        except world.BlockFormatError:
-            print 'bad input'
+        command = raw_input('command: ')
+        if command == 'save':
+            c.send('save')
+        elif command == 'load':
+            c.send('load')
+        else:
+            try:
+                world.update(command)
+                c.send('update:' + command)
+            except world.BlockFormatError:
+                print 'bad input'
         world.show()
 
 def blockupdate(name, pos):
@@ -84,4 +89,5 @@ def playerupdate(name, player):
     c.send('move:' + x)
 
 if __name__ == '__main__':
-    connection(raw_input('name:'), True)
+    host = raw_input('host: ')
+    connection(raw_input('name: '), True)

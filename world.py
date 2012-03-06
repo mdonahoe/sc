@@ -20,9 +20,12 @@ ID = STRING
 FLOAT = A floating point number, duh
 """
 
+import threading
+
 import player
 # all blocks have a unique id, and 3-tuple position
 BLOCKS = dict(o=(0,0,0),x=(10,0,0),y=(0,10,0),z=(0,0,10))  # a default world
+BLOCK_LOCK = threading.Lock()
 
 PLAYERS = dict()  # a list of player objects
 
@@ -44,15 +47,34 @@ def get_players():
 
 update_player('bob=0,10,0,45,0')  # this player is always there
 
+def parse(blockstring):
+    name, nums = blockstring.split('=')
+    values = list(float(x) for x in nums.split(','))
+    if len(values) != 3:
+        raise BlockFormatError
+    return name, values
+
 def update(blockstring):
     """converts a block string into a list of block updates"""
-    for block in blockstring.split('|'):
-        name, nums = block.split('=')
-        values = list(float(x) for x in nums.split(','))
-        if len(values) != 3:
-            raise BlockFormatError
-        BLOCKS[name] = values
+    with BLOCK_LOCK:
+        for block in blockstring.split('|'):
+            name, values = parse(block)
+            BLOCKS[name] = values
 
+def save():
+    with open('world.txt', 'w') as f:
+        with BLOCK_LOCK:
+            for name, pos in BLOCKS.iteritems():
+                f.write(make_string(name, pos) + '\n')
+
+def load():
+    with open('world.txt', 'r') as f:
+        with BLOCK_LOCK:
+            BLOCKS.clear()
+            for block in f.readlines():
+                name, value = parse(block)
+                BLOCKS[name] = value
+            
 def get_all():
     """return all the blocks as a blocklist"""
     blocks = []

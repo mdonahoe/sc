@@ -22,7 +22,10 @@ try:
         data, addr = s.recvfrom(100)
         CLIENTS[addr] = data
         print "%s %s" % (addr, data)
-        cmd, args = data.split(':', 1)
+        cmd_args = data.split(':', 1)
+        cmd = cmd_args[0]
+        if cmd not in ('save', 'load'):
+            args = cmd_args[1]
         if cmd == 'connect':
             CLIENTS[addr] = args
             print '%s connected' % args
@@ -39,6 +42,11 @@ try:
             for client in CLIENTS:
                 if addr == client: continue
                 s.sendto(data, client)
+        elif cmd == 'save':
+            world.save()
+        elif cmd == 'load':
+            # Any clients that are connected now disagree with the server.
+            world.load()
 finally:
     print 'Goodbye world'
     s.close()
